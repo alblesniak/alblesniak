@@ -30,9 +30,10 @@ def load_data():
     return merged_df
 
 def data_chunk_choice():
-    if 'foo' not in st.session_state:
+    if 'foo' not in st.session_state or st.session_state['foo'] is None:
         return 0
     return st.session_state['foo']
+
 
 # Load data
 merged_df = load_data()
