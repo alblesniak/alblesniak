@@ -38,8 +38,17 @@ def data_chunk_choice():
 merged_df = load_data()
 
 # UI
+# Add a column sorting selector
+sort_column = st.selectbox('Sort By:', ['keyword', 'log_likelihood', 'occurrences_A', 
+                                        'occurrences_per_1000_A', 'occurrences_B', 
+                                        'occurrences_per_1000_B', 'corpus'])
+sort_order = st.selectbox('Order:', ['Ascending', 'Descending'])
+if sort_order == 'Descending':
+    merged_df = merged_df.sort_values(by=sort_column, ascending=False)
+else:
+    merged_df = merged_df.sort_values(by=sort_column, ascending=True)
 
-
+# Break the dataframe into chunks for pagination
 n = 100  # Batch size (number of rows per page)
 list_df = [merged_df[i:i+n] for i in range(0, merged_df.shape[0], n)] 
 
