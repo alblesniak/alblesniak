@@ -34,20 +34,21 @@ def data_chunk_choice():
         return 0
     return st.session_state['foo']
 
-
 # Load data
 merged_df = load_data()
 
-# UI
-# Add a column sorting selector
-sort_column = st.selectbox('Sort By:', ['keyword', 'log_likelihood', 'occurrences_A', 
-                                        'occurrences_per_1000_A', 'occurrences_B', 
-                                        'occurrences_per_1000_B', 'corpus'])
-sort_order = st.selectbox('Order:', ['Ascending', 'Descending'])
-if sort_order == 'Descending':
-    merged_df = merged_df.sort_values(by=sort_column, ascending=False)
-else:
-    merged_df = merged_df.sort_values(by=sort_column, ascending=True)
+# User Selection for 'korpus' filtering
+options = {'pentekostalny': 'B', 'katolicki': 'A', 'wszystkie': None}
+selected_option = st.selectbox('Wybierz korpus:', list(options.keys()))
+
+if options[selected_option] is not None:
+    merged_df = merged_df[merged_df['korpus'] == options[selected_option]]
+
+# Always sort dataframe by 'log_likelihood' - descending
+merged_df = merged_df.sort_values(by='log_likelihood', ascending=False)
+
+# Resetting index to have an index column in displayed dataframe
+merged_df = merged_df.reset_index(drop=True)
 
 # Break the dataframe into chunks for pagination
 n = 100  # Batch size (number of rows per page)
@@ -56,8 +57,9 @@ list_df = [merged_df[i:i+n] for i in range(0, merged_df.shape[0], n)]
 # Get the current data chunk choice from pagination
 current_data_chunk = list_df[data_chunk_choice()]
 
+# Display Dataframe without 'korpus' column
 st.dataframe(
-    current_data_chunk,
+    current_data_chunk.drop(columns='korpus'),
     column_config={
         "keyword": st.column_config.TextColumn("Słowo kluczowe", width="medium"),
         "log_likelihood": st.column_config.NumberColumn("Log Likelihood"),
@@ -65,12 +67,11 @@ st.dataframe(
         "occurrences_per_1000_A": st.column_config.NumberColumn("Wystąpienia na 1000 słów (A)"),
         "occurrences_B": st.column_config.NumberColumn("Wystąpienia w korpusie B"),
         "occurrences_per_1000_B": st.column_config.NumberColumn("Wystąpienia na 1000 słów (A)"),
-        "corpus": st.column_config.TextColumn('Korpus'),
         "occurrences_over_time": st.column_config.LineChartColumn(
             "Occurrences Over Time", y_min=0, y_max=1
         ),
     },
-    hide_index=True,
+    hide_index=False,
     height=2024,
 )
 
