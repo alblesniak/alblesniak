@@ -75,7 +75,7 @@ st.dataframe(
         ),
     },
     hide_index=True,
-    width=1024,  # Adjusting the width same as selectbox
+    width=1500,  # Adjusting the width same as selectbox
 )
 
 # Setup layout for pagination
