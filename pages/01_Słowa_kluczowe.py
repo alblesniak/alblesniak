@@ -71,11 +71,11 @@ st.dataframe(
         "occurrences_per_1000_B": st.column_config.NumberColumn("Wystąpienia na 1000 słów (A)"),
         "corpus": st.column_config.TextColumn('Korpus'),
         "occurrences_over_time": st.column_config.LineChartColumn(
-            "Occurrences Over Time", y_min=0, y_max=1
+            "Wystąpienia w czasie", y_min=0, y_max=1
         ),
     },
     hide_index=True,
-    width=500,  # Adjusting the width same as selectbox
+    width=1024,  # Adjusting the width same as selectbox
 )
 
 # Setup layout for pagination
