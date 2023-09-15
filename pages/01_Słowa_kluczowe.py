@@ -37,12 +37,12 @@ def data_chunk_choice():
 # Load data
 merged_df = load_data()
 
-# User Selection for 'korpus' filtering
+# User Selection for 'corpus' filtering
 options = {'pentekostalny': 'B', 'katolicki': 'A', 'wszystkie': None}
 selected_option = st.selectbox('Wybierz korpus:', list(options.keys()))
 
 if options[selected_option] is not None:
-    merged_df = merged_df[merged_df['korpus'] == options[selected_option]]
+    merged_df = merged_df[merged_df['corpus'] == options[selected_option]]
 
 # Always sort dataframe by 'log_likelihood' - descending
 merged_df = merged_df.sort_values(by='log_likelihood', ascending=False)
@@ -57,9 +57,9 @@ list_df = [merged_df[i:i+n] for i in range(0, merged_df.shape[0], n)]
 # Get the current data chunk choice from pagination
 current_data_chunk = list_df[data_chunk_choice()]
 
-# Display Dataframe without 'korpus' column
+# Display Dataframe without 'corpus' column
 st.dataframe(
-    current_data_chunk.drop(columns='korpus'),
+    current_data_chunk.drop(columns='corpus'),
     column_config={
         "keyword": st.column_config.TextColumn("Słowo kluczowe", width="medium"),
         "log_likelihood": st.column_config.NumberColumn("Log Likelihood"),
