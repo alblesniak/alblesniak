@@ -38,7 +38,7 @@ def data_chunk_choice():
 merged_df = load_data()
 
 # User Selection for 'corpus' filtering
-options = {'pentekostalny': 'B', 'katolicki': 'A', 'wszystkie': None}
+options = {'wszystkie': None, 'pentekostalny': 'B', 'katolicki': 'A'}
 selected_option = st.selectbox('Wybierz korpus:', list(options.keys()))
 
 if options[selected_option] is not None:
@@ -47,8 +47,9 @@ if options[selected_option] is not None:
 # Always sort dataframe by 'log_likelihood' - descending
 merged_df = merged_df.sort_values(by='log_likelihood', ascending=False)
 
-# Resetting index to have an index column in displayed dataframe
-merged_df = merged_df.reset_index(drop=True)
+# Resetting index to have an index column in displayed dataframe, starting from 1
+merged_df = merged_df.reset_index(drop=True).reset_index(drop=False)
+merged_df['index'] = merged_df['index'] + 1
 
 # Break the dataframe into chunks for pagination
 n = 100  # Batch size (number of rows per page)
@@ -57,22 +58,24 @@ list_df = [merged_df[i:i+n] for i in range(0, merged_df.shape[0], n)]
 # Get the current data chunk choice from pagination
 current_data_chunk = list_df[data_chunk_choice()]
 
-# Display Dataframe without 'corpus' column
+# Display Dataframe
 st.dataframe(
-    current_data_chunk.drop(columns='corpus'),
+    current_data_chunk,
     column_config={
+        "index": st.column_config.NumberColumn("#", width="tiny"),
         "keyword": st.column_config.TextColumn("Słowo kluczowe", width="medium"),
         "log_likelihood": st.column_config.NumberColumn("Log Likelihood"),
         "occurrences_A": st.column_config.NumberColumn("Wystąpienia w korpusie A"),
         "occurrences_per_1000_A": st.column_config.NumberColumn("Wystąpienia na 1000 słów (A)"),
         "occurrences_B": st.column_config.NumberColumn("Wystąpienia w korpusie B"),
         "occurrences_per_1000_B": st.column_config.NumberColumn("Wystąpienia na 1000 słów (A)"),
+        "corpus": st.column_config.TextColumn('Korpus'),
         "occurrences_over_time": st.column_config.LineChartColumn(
             "Occurrences Over Time", y_min=0, y_max=1
         ),
     },
-    hide_index=False,
-    height=2024,
+    hide_index=True,
+    width=500,  # Adjusting the width same as selectbox
 )
 
 # Setup layout for pagination
